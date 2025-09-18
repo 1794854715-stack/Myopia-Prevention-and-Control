@@ -37,7 +37,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config.update(
     UPLOAD_FOLDER=UPLOAD_FOLDER,
     MAX_CONTENT_LENGTH=2 * 1024 * 1024,  # 2MB
-    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SECURE=False,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(days=1),
@@ -761,5 +761,6 @@ if __name__ == '__main__':
         logger.error(f"Neo4j连接失败: {str(e)}")
         # 生产环境建议终止启动
         # sys.exit(1)
+
 
     app.run(host='0.0.0.0', port=5000, debug=True)
