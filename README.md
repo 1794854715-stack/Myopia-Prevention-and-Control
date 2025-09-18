@@ -12,6 +12,4 @@
 - `templates`：Web前端模板文件
 
 ## 代码使用说明
-1. 环境搭建：`pip install -r data/requirements.txt`
-2. 运行知识图谱构建：`python src/kg_builder.py`
 3. 启动问答服务：`python src/app.py`
