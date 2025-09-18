@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环境光线检测 - 近视防控系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', 'Exo 2', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #e6f0ff;
+            min-height: 100vh;
+            display: flex;
+            color: #005566;
+            position: relative;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(128, 212, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(80, 200, 200, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(240, 248, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-right: 1px solid rgba(128, 212, 255, 0.4);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(208, 231, 255, 0.5);
+        }
+
+        .sidebar-menu li.active {
+            background: linear-gradient(90deg, rgba(128, 212, 255, 0.3), transparent);
+            border-left: 3px solid #4facfe;
+        }
+
+        .user-avatar-container {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            left: 15px;
+            top: 22px;
+            z-index: 1200;
+            background: none;
+            border: none;
+            color: #4facfe;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .container {
+            justify-content: center; /* 将子元素在水平方向上居中 */
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 90px 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background: rgba(245, 250, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #4facfe;
+            padding: 12px 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            z-index: 1100;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.4);
+            box-shadow: 0 0 20px rgba(128, 212, 255, 0.2);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            padding: 8px 16px;
+            background: rgba(128, 212, 255, 0.2);
+            color: #4facfe;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background: rgba(128, 212, 255, 0.3);
+            box-shadow: 0 0 10px rgba(128, 212, 255, 0.3);
+        }
+
+        .title {
+            color: #4facfe;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        .camera-container {
+            width: 100%;
+            max-width: 600px;
+            height: 350px;
+            background: rgba(200, 220, 255, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(128, 212, 255, 0.4);
+            box-shadow: 0 0 30px rgba(128, 212, 255, 0.2);
+        }
+
+        .camera-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg,
+                rgba(128, 212, 255, 0.5) 0%,
+                rgba(79, 172, 254, 0.5) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                         linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box,
+                  linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderPulse 3s infinite;
+        }
+
+        #camera-view {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .camera-placeholder {
+            text-align: center;
+            color: #4facfe;
+            padding: 20px;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        .result-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(230, 240, 255, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            box-shadow: 0 0 30px rgba(128, 212, 255, 0.2);
+        }
+
+        .light-level {
+            font-size: 32px;
+            color: #00cc66;
+            text-align: center;
+            margin-bottom: 15px;
+            font-family: 'Consolas', monospace;
+            text-shadow: 0 0 10px rgba(0, 204, 102, 0.4);
+        }
+
+        .light-desc {
+            color: #4facfe;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .light-meter {
+            height: 12px;
+            background: linear-gradient(to right,
+                #4facfe 0%,
+                #80d4ff 30%,
+                #00cc66 50%,
+                #ffaa00 70%,
+                #ff4d4d 100%);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        .light-meter-indicator {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 20px;
+            background: #00cc66;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 204, 102, 0.5);
+            transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .recommendation {
+            background: rgba(200, 220, 255, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            color: #005566;
+            font-size: 16px;
+            line-height: 1.6;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #80d4ff 0%, #4facfe 100%);
+            color: #1a2a44;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(128, 212, 255, 0.5);
+        }
+
+        .btn:disabled {
+            background: linear-gradient(135deg, #c8d9ff 0%, #a3c1ff 100%);
+            color: #4facfe;
+            cursor: not-allowed;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: left 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #005566;
+            font-size: 14px;
+            background: rgba(245, 250, 255, 0.9);
+            backdrop-filter: blur(5px);
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 70%;
+            }
+
+            .container {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 15px 15px;
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @keyframes borderPulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <nav class="sidebar">
+        <div class="user-avatar-container">
+            <a href="/user-center" class="user-avatar">
+                <img src="{{ user.avatar_url }}" alt="用户头像" onerror="this.src='/static/uploads/avatars/user_1.png'">
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li data-href="/index">💡 防控问答</li>
+            <li data-href="/user-center">👤 用户中心</li>
+            <li data-href="/light-detection" class="active">🔆 光线检测</li>
+            <li data-href="/kids_game">🎮 护眼小游戏</li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='/main'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                返回
+            </button>
+            <h1>环境光线检测</h1>
+        </div>
+
+        <h2 class="title">检测当前环境光线</h2>
+
+        <div class="camera-container">
+            <video id="camera-view" autoplay playsinline></video>
+            <div class="camera-placeholder" id="camera-placeholder">
+                点击"开始检测"按钮启动摄像头
+            </div>
+        </div>
+
+        <div class="result-container">
+            <div class="light-level" id="light-level">-- lux</div>
+            <div class="light-desc" id="light-desc">等待检测...</div>
+            <div class="light-meter">
+                <div class="light-meter-indicator" id="light-indicator" style="left: 100%"></div>
+            </div>
+            <div class="recommendation" id="recommendation">
+                请点击下方"开始检测"按钮，允许摄像头访问后开始检测
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn" id="start-btn">开始检测</button>
+            <button class="btn" id="stop-btn" disabled>停止检测</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 近视防控系统 - 保护视力，从我做起
+    </div>
+
+    <script>
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)'
+                ? 'translateX(-100%)'
+                : 'translateX(0px)';
+        }
+
+        const video = document.getElementById('camera-view');
+        const cameraPlaceholder = document.getElementById('camera-placeholder');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const lightLevel = document.getElementById('light-level');
+        const lightDesc = document.getElementById('light-desc');
+        const lightIndicator = document.getElementById('light-indicator');
+        const recommendation = document.getElementById('recommendation');
+
+        let stream = null;
+        let animationId = null;
+        let isDetecting = false;
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const hasCameraPermission = devices.some(device => device.kind === 'videoinput' && device.label !== '');
+
+                if (!hasCameraPermission) {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' }
+                    });
+                } else {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' }
+                    });
+                }
+
+                video.srcObject = stream;
+                cameraPlaceholder.style.display = 'none';
+                video.style.display = 'block';
+
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                isDetecting = true;
+
+                lightDesc.textContent = '正在检测光线...';
+                recommendation.textContent = '请将摄像头对准您阅读的环境';
+
+                startLightDetection();
+            } catch (err) {
+                console.error('摄像头访问失败:', err);
+                lightDesc.textContent = '摄像头访问失败';
+                recommendation.textContent = '请确保已允许摄像头访问权限，然后刷新页面重试';
+                cameraPlaceholder.textContent = '无法访问摄像头';
+                cameraPlaceholder.style.display = 'block';
+                video.style.display = 'none';
+            }
+        });
+
+        function startLightDetection() {
+            if (!isDetecting) return;
+
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                let brightness = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    brightness += (data[i] + data[i+1] + data[i+2]) / 3;
+                }
+                brightness = brightness / (data.length / 4);
+
+                const lux = Math.round(brightness * 2);
+                updateLightUI(lux);
+                animationId = requestAnimationFrame(startLightDetection);
+            } catch (e) {
+                console.error('光线检测错误:', e);
+                lightDesc.textContent = '检测过程中出错';
+                recommendation.textContent = '请尝试重新开始检测';
+                stopDetection();
+            }
+        }
+
+        function updateLightUI(lux) {
+            lightLevel.textContent = `${lux} lux`;
+            const position = Math.min(lux / 10, 100);
+            lightIndicator.style.left = `${position}%`;
+
+            if (lux < 100) {
+                lightDesc.textContent = "光线太暗";
+                lightDesc.style.color = "#ff4d4d";
+                recommendation.textContent = "⚠️ 当前环境光线不足，不适合阅读或使用电子设备，请增加环境亮度";
+            } else if (lux < 300) {
+                lightDesc.textText = "光线较暗";
+                lightDesc.style.color = "#ffaa00";
+                recommendation.textContent = "⚠️ 当前环境光线偏暗，长时间阅读或使用电子设备可能导致眼疲劳";
+            } else if (lux < 500) {
+                lightDesc.textContent = "光线适中";
+                lightDesc.style.color = "#00cc66";
+                recommendation.textContent = "✅ 当前环境光线适宜阅读和使用电子设备，请注意定时休息";
+            } else if (lux < 1000) {
+                lightDesc.textContent = "光线明亮";
+                lightDesc.style.color = "#4facfe";
+                recommendation.textContent = "⚠️ 当前环境光线充足，适合阅读，但可能对电子设备屏幕造成反光";
+            } else {
+                lightDesc.textContent = "光线过强";
+                lightDesc.style.color = "#ff4d4d";
+                recommendation.textContent = "⚠️ 当前环境光线过强，可能造成眩光，建议调整到适度亮度";
+            }
+        }
+
+        function stopDetection() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            isDetecting = false;
+
+            cameraPlaceholder.textContent = '点击"开始检测"按钮启动摄像头';
+            cameraPlaceholder.style.display = 'block';
+            video.style.display = 'none';
+        }
+
+        stopBtn.addEventListener('click', () => {
+            stopDetection();
+            lightLevel.textContent = '-- lux';
+            lightDesc.textContent = '检测已停止';
+            lightDesc.style.color = "#4facfe";
+            recommendation.textContent = '点击"开始检测"重新检测环境光线';
+        });
+
+        window.addEventListener('beforeunload', stopDetection);
+        video.style.display = 'none';
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ad370f686b675a',t:'MTc0NjQxNjQxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>近视防控系统 - 注册</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', 'Exo 2', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #e6f0ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #005566;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(128, 212, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(80, 200, 200, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(240, 248, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(128, 212, 255, 0.2);
+            overflow: hidden;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(128, 212, 255, 0.4);
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #80d4ff 0%, #4facfe 100%);
+            border-radius: 16px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        h2 {
+            color: #4facfe;
+            font-size: 22px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        .subtitle {
+            color: #005566;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background-color: rgba(230, 240, 255, 0.9);
+            padding-right: 40px;
+        }
+
+        .input-group input:focus {
+            border-color: #4facfe;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.2);
+            background-color: white;
+        }
+
+        .input-group input::placeholder {
+            color: #90a4ae;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #80d4ff 0%, #4facfe 100%);
+            color: #1a2a44;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(128, 212, 255, 0.5);
+        }
+
+        .register-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: left 0.5s;
+        }
+
+        .register-btn:hover::after {
+            left: 100%;
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #005566;
+        }
+
+        .footer-links a {
+            color: #4facfe;
+            text-decoration: none;
+            margin: 0 8px;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .eye-care-tip {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(128, 212, 255, 0.4);
+            font-size: 13px;
+            color: #005566;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: left;
+            display: none;
+        }
+
+        .input-group.invalid input {
+            border-color: #ff4d4d;
+        }
+
+        .input-group.valid input {
+            border-color: #00cc66;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #90a4ae;
+        }
+
+        .toggle-password:hover {
+            color: #4facfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="app-icon">护</div>
+
+        <h2>近视防控问答系统</h2>
+        <p class="subtitle">创建您的专业账户</p>
+
+        <form id="register-form" action="/register" method="POST">
+            <div class="input-group">
+                <input type="text" name="username" id="username" placeholder="请输入用户名（4-16位字符）" required minlength="4" maxlength="16">
+                <div class="error-message" id="username-error"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" id="password" placeholder="请输入密码（至少8位）" required minlength="8">
+                <span class="toggle-password">👁️</span>
+                <div class="error-message" id="password-error"></div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="confirm_password" id="confirm-password" placeholder="请再次输入密码" required>
+                <span class="toggle-password">👁️</span>
+                <div class="error-message" id="confirm-error"></div>
+            </div>
+
+            <button type="submit" class="register-btn">注册</button>
+        </form>
+
+        <div class="footer-links">
+            <a href="/login">已有账号？立即登录</a>
+        </div>
+
+        <div class="eye-care-tip">
+            ⚕️ 温馨提示：密码长度建议8位以上，包含字母和数字
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                this.textContent = isPassword ? '🙈' : '👁️';
+            });
+        });
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            let isValid = true;
+
+            const username = document.getElementById('username');
+            if (username.value.length < 4 || username.value.length > 16) {
+                showError('username-error', '用户名需4-16位字符');
+                isValid = false;
+            }
+
+            const password = document.getElementById('password');
+            if (password.value.length < 8) {
+                showError('password-error', '密码至少需要8位');
+                isValid = false;
+            } else if (!/[A-Za-z]/.test(password.value) || !/[0-9]/.test(password.value)) {
+                showError('password-error', '密码需包含字母和数字');
+                isValid = false;
+            }
+
+            const confirm = document.getElementById('confirm-password');
+            if (password.value !== confirm.value) {
+                showError('confirm-error', '两次输入的密码不一致');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                const errorId = this.id + '-error';
+                document.getElementById(errorId).style.display = 'none';
+                this.parentElement.classList.remove('invalid', 'valid');
+
+                if (this.value) {
+                    this.parentElement.classList.add('valid');
+                }
+            });
+        });
+
+        function showError(id, message) {
+            const errorElement = document.getElementById(id);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.parentElement.classList.add('invalid');
+        }
+    </script>
+</body>
+</html>

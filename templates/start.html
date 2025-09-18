@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>近视防控平台</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        /* 卡片容器样式 */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            color: #34495e;
+            margin: 10px 0;
+        }
+
+        .card-desc {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="welcome">欢迎回来, {{ user.username }}!</h2>
+        <div class="card-container">
+            <!-- 卡片列表 -->
+            <div class="card" data-href="/index">
+                <div class="card-icon">💡</div>
+                <h3 class="card-title">近视防控问答</h3>
+                <p class="card-desc">向智能机器人咨询近视防控相关问题</p>
+            </div>
+
+            <div class="card" data-href="/light-detection">
+                <div class="card-icon">🔆</div>
+                <h3 class="card-title">环境光线检测</h3>
+                <p class="card-desc">检测当前环境光线是否适合阅读</p>
+            </div>
+
+            <div class="card" data-href="/user-center">
+                <div class="card-icon">👤</div>
+                <h3 class="card-title">个人中心</h3>
+                <p class="card-desc">查看和修改您的个人信息</p>
+            </div>
+
+            <div class="card" data-href="/kids_game">
+                <div class="card-icon">🦸</div>
+                <h3 class="card-title">护眼小勇士</h3>
+                <p class="card-desc">开启护眼挑战，成为护眼小勇士</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 卡片点击事件处理
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        // 侧边栏导航逻辑（根据之前的需求保留）
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu li').forEach(li =>
+                    li.classList.remove('active'));
+                this.classList.add('active');
+                if (!this.classList.contains('no-redirect')) {
+                    window.location.href = this.dataset.href;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

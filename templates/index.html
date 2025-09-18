@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>近视防控问答</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', 'Exo 2', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #e6f0ff;
+            min-height: 100vh;
+            display: flex;
+            color: #005566;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(100, 180, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(80, 200, 200, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(240, 248, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-right: 1px solid rgba(128, 212, 255, 0.4);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-container {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(208, 231, 255, 0.5);
+        }
+
+        .sidebar-menu li.active {
+            background: linear-gradient(90deg, rgba(128, 212, 255, 0.3), transparent);
+            border-left: 3px solid #4facfe;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            left: 15px;
+            top: 22px;
+            z-index: 1200;
+            background: none;
+            border: none;
+            color: #4facfe;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 90px 20px 20px;
+            position: relative;
+        }
+
+        .chat-container {
+            width: 420px;
+            height: 680px;
+            margin: 0 auto;
+            background: rgba(245, 250, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(100, 180, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #4facfe 0%, #80d4ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4facfe, transparent);
+            animation: scanning 3s infinite linear;
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(230, 240, 255, 0.9);
+        }
+
+        .chat-message {
+            max-width: 75%;
+            margin-bottom: 20px;
+            animation: messageAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .chat-message.user-message {
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 12px 18px;
+            border-radius: 15px;
+            line-height: 1.6;
+            font-size: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #4facfe 0%, #80d4ff 100%);
+            color: #1a2a44;
+            border-bottom-right-radius: 3px;
+        }
+
+        .bot-message .message-content {
+            background: rgba(230, 240, 255, 0.9);
+            color: #005566;
+            border-bottom-left-radius: 3px;
+            border: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        #input-area {
+            display: flex;
+            padding: 15px;
+            background: rgba(245, 250, 255, 0.9);
+            border-top: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        #question-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 25px;
+            font-size: 15px;
+            background: rgba(230, 240, 255, 0.7);
+            color: #005566;
+            transition: all 0.3s;
+        }
+
+        #question-input:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.4);
+        }
+
+        #ask-button {
+            padding: 12px 25px;
+            margin-left: 15px;
+            background: linear-gradient(135deg, #80d4ff 0%, #4facfe 100%);
+            color: #1a2a44;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        #ask-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(128, 212, 255, 0.5);
+        }
+
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 15px;
+            background: rgba(128, 212, 255, 0.2);
+            color: #4facfe;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(128, 212, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(128, 212, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 70%;
+            }
+            .container {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 15px 15px;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .chat-container {
+                width: 95%;
+                height: 80vh;
+            }
+        }
+
+        @keyframes scanning {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes messageAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <nav class="sidebar">
+        <div class="user-avatar-container">
+            <a href="/user-center" class="user-avatar">
+                <img src="{{ user.avatar_url }}" alt="用户头像" onerror="this.src='/static/uploads/avatars/user_1.png'">
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li data-href="/index" class="active">💡 防控问答</li>
+            <li data-href="/user-center">👤 用户中心</li>
+            <li data-href="/light-detection">🔆 光线检测</li>
+            <li data-href="/kids_game">🎮 护眼小游戏</li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="chat-container">
+            <h1>近视防控问答
+                <button class="logout-btn" onclick="logout()">
+                    <svg width="14" height="14" viewBox="0 0 24 24">
+                        <path d="M17 16L21 12 17 8M13 8V5L11 5H7V19H11L13 19V16"
+                              stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    退出
+                </button>
+            </h1>
+
+            <div id="chat-box">
+                <div class="chat-message bot-message">
+                    <div class="message-content">
+                        🔭 您好！我是视觉健康AI，关于近视防控的疑问都可以问我！
+                    </div>
+                </div>
+            </div>
+
+            <div id="input-area">
+                <input type="text" id="question-input" placeholder="输入你的视觉健康疑问...">
+                <button id="ask-button">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 侧边栏导航
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        // 移动端侧边栏切换
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)'
+                ? 'translateX(-100%)'
+                : 'translateX(0px)';
+        }
+
+        // 退出登录
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(() => window.location.href = '/login');
+        }
+
+        // 聊天功能
+        document.getElementById('ask-button').addEventListener('click', sendMessage);
+        document.getElementById('question-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('question-input');
+            const question = input.value.trim();
+            if (!question) return;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `
+                <div class="chat-message user-message">
+                    <div class="message-content">${question}</div>
+                </div>
+            `;
+
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += `
+                    <div class="chat-message bot-message">
+                        <div class="message-content">${data.answer}</div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                chatBox.innerHTML += `
+                    <div class="chat-message bot-message">
+                        <div class="message-content" style="color: #ff4d4d;">
+                            ❗ 网络连接异常：${error.message}
+                        </div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93acd9ee68071d74',t:'MTc0NjQxMjU5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

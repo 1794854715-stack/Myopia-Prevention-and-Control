@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>近视防控系统 - 主界面</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', 'Exo 2', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f0ff 0%, #f5faff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #005566;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(128, 212, 255, 0.2) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(240, 248, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-right: 1px solid rgba(128, 212, 255, 0.4);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar-container {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+       .user-name {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 20px 0;
+    }
+
+    .sidebar-menu li {
+        padding: 15px 25px;
+        color: #007bff;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .sidebar-menu li:hover {
+        background: rgba(208, 231, 255, 0.5);
+    }
+
+    .sidebar-menu li.active {
+        background: linear-gradient(90deg, rgba(128, 212, 255, 0.3), transparent);
+        border-left: 3px solid #4facfe;
+    }
+
+    .header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1100;
+        background: rgba(245, 250, 255, 0.95);
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(128, 212, 255, 0.4);
+        text-align: center;
+    }
+
+    .header h1 {
+        color: #4facfe;
+        font-size: 2.2em;
+        text-shadow: 0 0 15px rgba(128, 212, 255, 0.5);
+        letter-spacing: 1.5px;
+    }
+
+    .logout-btn {
+        position: absolute;
+        top: 50%;
+        right: 25px;
+        transform: translateY(-50%);
+        padding: 8px 20px;
+        background: rgba(128, 212, 255, 0.2);
+        border: 1px solid rgba(128, 212, 255, 0.4);
+        color: #4facfe;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .logout-btn:hover {
+        background: rgba(128, 212, 255, 0.3);
+        box-shadow: 0 0 10px rgba(128, 212, 255, 0.3);
+    }
+
+    .menu-toggle {
+        display: none;
+        position: fixed;
+        left: 15px;
+        top: 22px;
+        z-index: 1200;
+        background: none;
+        border: none;
+        color: #4facfe;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .container {
+        margin-left: 250px;
+        padding: 100px 30px 30px;
+        width: calc(100% - 250px);
+        min-height: 100vh;
+    }
+
+    .welcome {
+        color: #4facfe;
+        font-size: 2em;
+        margin-bottom: 30px;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+    }
+
+    .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background: rgba(230, 240, 255, 0.9);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(128, 212, 255, 0.4);
+        box-shadow: 0 0 15px rgba(128, 212, 255, 0.2);
+    }
+
+    .card:hover {
+        background: rgba(208, 231, 255, 0.7);
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(128, 212, 255, 0.3);
+    }
+
+    .card-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+        color: #4facfe;
+        text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+    }
+
+    .card-title {
+        color: #005566;
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    .card-desc {
+        color: #1a2a44;
+        font-size: 1em;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+            width: 70%;
+        }
+
+        .container {
+            margin-left: 0;
+            width: 100%;
+            padding: 80px 15px 15px;
+        }
+
+        .menu-toggle {
+            display: block;
+        }
+    }
+</style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+    <nav class="sidebar">
+        <div class="user-avatar-container">
+            <a href="/user-center" class="user-avatar">
+                <img src="{{ user.avatar_url }}" alt="用户头像" onerror="this.src='/static/uploads/avatars/user_1.png'">
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li data-href="/index" class="active">💡 防控问答</li>
+            <li data-href="/user-center">👤 用户中心</li>
+            <li data-href="/light-detection">🔆 光线检测</li>
+            <li data-href="/kids_game">🎮 护眼小游戏</li>
+        </ul>
+    </nav>
+
+    <div class="header">
+        <h1>近视防控系统</h1>
+        <button class="logout-btn" onclick="logout()">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+                <path d="M17 16L21 12M21 12L17 8M21 12H7M13 16V17C13 18.1046 12.1046 19 11 19H7C5.89543 19 5 18.1046 5 17V7C5 5.89543 5.89543 5 7 5H11C12.1046 5 13 5.89543 13 7V8"
+                      stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            退出登录
+        </button>
+    </div>
+
+    <div class="container">
+        <h2 class="welcome">欢迎回来, {{ user.username }}!</h2>
+        <div class="card-container">
+            <div class="card" data-href="/index">
+                <div class="card-icon">💡</div>
+                <h3 class="card-title">近视防控问答</h3>
+                <p class="card-desc">向智能机器人咨询近视防控相关问题</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(li =>
+                    li.classList.remove('active'));
+                this.classList.add('active');
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const currentTransform = sidebar.style.transform;
+            sidebar.style.transform = currentTransform === 'translateX(0px)' || !currentTransform 
+                ? 'translateX(-100%)' 
+                : 'translateX(0px)';
+        }
+
+        function handleLoginSuccess() {
+            window.location.href = '/index.html';
+        }
+
+        function logout() {
+            const timestamp = new Date().getTime();
+            fetch(`/logout?t=${timestamp}`, {
+                method: 'GET',
+                headers: {'Cache-Control': 'no-cache'}
+            }).then(() => window.location.href = `/login?t=${timestamp}`);
+        }
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                window.location.href = this.dataset.href;
+            });
+        });
+    </script>
+</body>
+</html>

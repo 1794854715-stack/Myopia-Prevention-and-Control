@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心 - 近视防控系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4facfe;
+            --primary-light: #80d4ff;
+            --primary-dark: #1a73e8;
+            --secondary: #00cc66;
+            --background: #e6f0ff;
+            --card-bg: rgba(230, 240, 255, 0.9);
+            --text-main: #005566;
+            --text-secondary: #1a2a44;
+            --highlight: rgba(128, 212, 255, 0.2);
+            --success: #00cc66;
+            --danger: #ff4d4d;
+            --cyber-border: 1px solid rgba(128, 212, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', 'Exo 2', 'Oxanium', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #e6f0ff;
+            min-height: 100vh;
+            display: flex;
+            color: #005566;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(128, 212, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(80, 200, 200, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(240, 248, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-right: 1px solid rgba(128, 212, 255, 0.4);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(208, 231, 255, 0.5);
+        }
+
+        .sidebar-menu li.active {
+            background: linear-gradient(90deg, rgba(128, 212, 255, 0.3), transparent);
+            border-left: 3px solid #4facfe;
+        }
+
+        .user-avatar-container {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            left: 15px;
+            top: 22px;
+            z-index: 1200;
+            background: none;
+            border: none;
+            color: #4facfe;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 90px 20px 20px;
+            position: relative;
+        }
+
+        .header {
+            background: rgba(245, 250, 255, 0.95);
+            padding: 12px 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            z-index: 1100;
+            border-bottom: var(--cyber-border);
+            box-shadow: 0 0 20px rgba(128, 212, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(128, 212, 255, 0.5);
+        }
+
+        .back-btn, .logout-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 15px;
+            background: rgba(128, 212, 255, 0.2);
+            color: #4facfe;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .back-btn {
+            left: 20px;
+        }
+
+        .logout-btn {
+            right: 20px;
+        }
+
+        .back-btn:hover, .logout-btn:hover {
+            background: rgba(128, 212, 255, 0.3);
+            box-shadow: 0 0 10px rgba(128, 212, 255, 0.3);
+        }
+
+        .main-content {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            border: var(--cyber-border);
+            box-shadow: 0 0 30px rgba(128, 212, 255, 0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 0 20px var(--primary-light);
+            border: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-avatar:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-upload {
+            display: none;
+        }
+
+        .profile-name {
+            font-size: 26px;
+            background: linear-gradient(90deg, var(--primary) 0%, #1a2a44 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-meta span {
+            margin-right: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .info-card {
+            background: rgba(200, 220, 255, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: var(--cyber-border);
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(128, 212, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 20px;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: rgba(128, 212, 255, 0.1);
+            border-radius: 6px;
+            padding: 15px;
+            border: 1px solid rgba(128, 212, 255, 0.2);
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .editable {
+            border-bottom: 1px solid var(--primary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .editable:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.4);
+        }
+
+        .edit-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .edit-form input, .edit-form select, .edit-form textarea {
+            width: 100%;
+            padding: 8px;
+            background: rgba(200, 220, 255, 0.7);
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        .edit-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-card {
+            background: rgba(200, 220, 255, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: var(--cyber-border);
+        }
+
+        .history-question, .history-answer {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .history-question {
+            background: rgba(128, 212, 255, 0.1);
+        }
+
+        .history-answer {
+            background: rgba(0, 204, 102, 0.1);
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #1a2a44;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(128, 212, 255, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #1a2a44;
+        }
+
+        .refresh-btn {
+            padding: 8px 15px;
+            background: rgba(128, 212, 255, 0.2);
+            color: #4facfe;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(128, 212, 255, 0.3);
+            box-shadow: 0 0 10px rgba(128, 212, 255, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(245, 250, 255, 0.95);
+            border: var(--cyber-border);
+            box-shadow: 0 0 40px rgba(128, 212, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background: rgba(200, 220, 255, 0.7);
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 4px;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 70%;
+            }
+
+            .container {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 15px 15px;
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+        }
+
+        @keyframes scanning {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <nav class="sidebar">
+        <div class="user-avatar-container">
+            <a href="/user-center" class="user-avatar">
+                <img src="{{ user.avatar_url }}" alt="用户头像" onerror="this.src='/static/uploads/avatars/user_1.png'">
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li data-href="/index">💡 防控问答</li>
+            <li data-href="/light-detection">🔆 光线检测</li>
+            <li data-href="/kids_game">🎮 护眼小游戏</li>
+            <li data-section="profile" class="active">👤 个人资料</li>
+            <li data-section="history">📜 问答记录</li>
+            <li data-section="settings">⚙️ 系统设置</li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='/'">
+                <i class="fas fa-chevron-left"></i> 首页
+            </button>
+            <div class="logo">近视防控系统</div>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> 退出登录
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div id="profile-section">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">
+                        <input type="file" id="avatar-upload" class="avatar-upload" accept="image/*">
+                        <div class="avatar-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <span id="avatar-text">J</span>
+                    </div>
+                    <div class="profile-details">
+                        <h1 class="profile-name" id="username">{{ user.username }}</h1>
+                        <div class="profile-meta">
+                            <span><i class="far fa-calendar-alt"></i> 注册于 <span id="register-date">2023-01-01</span></span>
+                            <span><i class="far fa-clock"></i> 上次登录 <span id="last-login">2023-06-01</span></span>
+                            <span><i class="fas fa-shield-alt"></i> 近视防控第 <span id="days-count">0</span> 天</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-id-card"></i> 健康档案</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-birthday-cake"></i> 年龄</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="age" id="age-value">未设置</span>
+                                <div class="edit-form" id="age-form">
+                                    <input type="number" id="age-input" min="1" max="120" placeholder="请输入年龄">
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('age')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('age')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-venus-mars"></i> 性别</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="gender" id="gender-value">未设置</span>
+                                <div class="edit-form" id="gender-form">
+                                    <select id="gender-input">
+                                        <option value="">请选择性别</option>
+                                        <option value="男">男</option>
+                                        <option value="女">女</option>
+                                        <option value="其他">其他</option>
+                                    </select>
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('gender')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('gender')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-marker-alt"></i> 地区</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="region" id="region-value">未设置</span>
+                                <div class="edit-form" id="region-form">
+                                    <input type="text" id="region-input" placeholder="请输入所在地区">
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('region')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('region')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-eye"></i> 视力情况</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="vision" id="vision-value">未检测</span>
+                                <div class="edit-form" id="vision-form">
+                                    <select id="vision-input">
+                                        <option value="">请选择视力情况</option>
+                                        <option value="正常">正常</option>
+                                        <option value="近视">近视</option>
+                                    </select>
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('vision')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('vision')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-ruler"></i> 近视度数</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="degree" id="degree-value">未测量</span>
+                                <div class="edit-form" id="degree-form">
+                                    <input type="text" id="degree-input" placeholder="例如: 左眼-3.5,右眼-4.0">
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('degree')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('degree')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-heartbeat"></i> 防控方案</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="plan" id="plan-value">待制定</span>
+                                <div class="edit-form" id="plan-form">
+                                    <textarea id="plan-input" placeholder="请输入您的近视防控方案"></textarea>
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('plan')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('plan')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-quote-left"></i> 个性签名</h2>
+                    </div>
+                    <div class="motto">
+                        <span class="editable" data-field="motto" id="motto-value">在这里写下你的护眼宣言...</span>
+                        <div class="edit-form" id="motto-form">
+                            <textarea id="motto-input" placeholder="写下您的护眼宣言或座右铭"></textarea>
+                            <div class="edit-buttons">
+                                <button class="btn btn-primary" onclick="saveField('motto')">
+                                    <i class="fas fa-check"></i> 保存
+                                </button>
+                                <button class="btn btn-outline" onclick="cancelEdit('motto')">
+                                    <i class="fas fa-times"></i> 取消
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history-section" style="display:none">
+                <div class="card-header" style="margin-bottom: 20px;">
+                    <h2 class="card-title"><i class="fas fa-history"></i> 智能问答记录</h2>
+                    <button class="refresh-btn" id="refresh-history">
+                        <i class="fas fa-sync-alt"></i> 刷新记录
+                    </button>
+                </div>
+                <div id="history-container">
+                    <div class="no-history" id="no-history-message">
+                        <i class="fas fa-robot"></i>
+                        <p>正在加载问答记录...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-section" style="display:none">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-cogs"></i> 系统设置</h2>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-lock"></i> 账户安全</h3>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-key"></i> 密码</div>
+                            <button class="btn btn-primary" onclick="showPasswordModal()" style="padding: 6px 12px;">
+                                <i class="fas fa-edit"></i> 修改密码
+                            </button>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-envelope"></i> 邮箱</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="email" id="email-value">未绑定</span>
+                                <div class="edit-form" id="email-form">
+                                    <input type="email" id="email-input" placeholder="请输入邮箱地址">
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('email')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('email')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-mobile-alt"></i> 手机</div>
+                            <div class="info-value">
+                                <span class="editable" data-field="phone" id="phone-value">未绑定</span>
+                                <div class="edit-form" id="phone-form">
+                                    <input type="tel" id="phone-input" placeholder="请输入手机号码">
+                                    <div class="edit-buttons">
+                                        <button class="btn btn-primary" onclick="saveField('phone')">
+                                            <i class="fas fa-check"></i> 保存
+                                        </button>
+                                        <button class="btn btn-outline" onclick="cancelEdit('phone')">
+                                            <i class="fas fa-times"></i> 取消
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-key"></i> 修改密码</h3>
+                <button class="close-modal" onclick="closeModal('password-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 12px;">
+                    <label for="current-password" style="display: block; margin-bottom: 4px; color: var(--text-secondary); font-size: 13px;">当前密码</label>
+                    <input type="password" id="current-password" class="edit-form" placeholder="请输入当前密码">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label for="new-password" style="display: block; margin-bottom: 4px; color: var(--text-secondary); font-size: 13px;">新密码</label>
+                    <input type="password" id="new-password" class="edit-form" placeholder="请输入新密码">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label for="confirm-password" style="display: block; margin-bottom: 4px; color: var(--text-secondary); font-size: 13px;">确认新密码</label>
+                    <input type="password" id="confirm-password" class="edit-form" placeholder="请再次输入新密码">
+                </div>
+                <div class="edit-buttons">
+                    <button class="btn btn-success" onclick="changePassword()">
+                        <i class="fas fa-check"></i> 确认修改
+                    </button>
+                    <button class="btn btn-outline" onclick="closeModal('password-modal')">
+                        <i class="fas fa-times"></i> 取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.sidebar-menu li[data-href]').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        document.querySelectorAll('.sidebar-menu li[data-section]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                document.querySelectorAll('.main-content > div').forEach(section => {
+                    section.style.display = 'none';
+                });
+                const section = this.dataset.section;
+                document.getElementById(`${section}-section`).style.display = 'block';
+                if (section === 'history') {
+                    userData.loadHistory();
+                }
+            });
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)'
+                ? 'translateX(-100%)'
+                : 'translateX(0px)';
+        }
+
+        const userData = {
+            init: function() {
+                let data = localStorage.getItem('myopiaPreventionUserData');
+                if (data) {
+                    this.data = JSON.parse(data);
+                } else {
+                    this.data = {
+                        username: '用户',
+                        avatarText: '用',
+                        avatarUrl: '',
+                        registerDate: new Date().toISOString().split('T')[0],
+                        lastLogin: new Date().toISOString().split('T')[0],
+                        age: '',
+                        gender: '',
+                        region: '',
+                        vision: '',
+                        degree: '',
+                        plan: '',
+                        motto: '',
+                        email: '',
+                        phone: ''
+                    };
+                    this.save();
+                }
+                this.loadUsername();
+                this.updateUI();
+                this.loadHistory();
+            },
+
+            loadUsername: function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('username')) {
+                    const username = decodeURIComponent(urlParams.get('username'));
+                    if (username && username !== '用户') {
+                        this.data.username = username;
+                        this.data.avatarText = username.charAt(0);
+                        this.save();
+                        return;
+                    }
+                }
+                if (sessionStorage.getItem('currentUsername')) {
+                    const username = sessionStorage.getItem('currentUsername');
+                    if (username && username !== '用户') {
+                        this.data.username = username;
+                        this.data.avatarText = username.charAt(0);
+                        this.save();
+                        return;
+                    }
+                }
+                if (localStorage.getItem('currentUsername')) {
+                    const username = localStorage.getItem('currentUsername');
+                    if (username && username !== '用户') {
+                        this.data.username = username;
+                        this.data.avatarText = username.charAt(0);
+                        this.save();
+                        return;
+                    }
+                }
+            },
+
+            save: function() {
+                localStorage.setItem('myopiaPreventionUserData', JSON.stringify(this.data));
+            },
+
+            update: function(field, value) {
+                this.data[field] = value;
+                this.save();
+                this.updateFieldUI(field);
+            },
+
+            updateUI: function() {
+                document.getElementById('username').textContent = this.data.username;
+                const avatar = document.getElementById('profile-avatar');
+                if (this.data.avatarUrl) {
+                    avatar.style.backgroundImage = `url(${this.data.avatarUrl})`;
+                    document.getElementById('avatar-text').style.display = 'none';
+                } else {
+                    avatar.style.backgroundImage = '';
+                    document.getElementById('avatar-text').style.display = 'flex';
+                    document.getElementById('avatar-text').textContent = this.data.avatarText;
+                }
+                document.getElementById('register-date').textContent = this.data.registerDate;
+                document.getElementById('last-login').textContent = this.data.lastLogin;
+                const registerDate = new Date(this.data.registerDate);
+                const today = new Date();
+                const diffTime = Math.abs(today - registerDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('days-count').textContent = diffDays;
+                const fields = ['age', 'gender', 'region', 'vision', 'degree', 'plan', 'motto', 'email', 'phone'];
+                fields.forEach(field => {
+                    this.updateFieldUI(field);
+                });
+            },
+
+            updateFieldUI: function(field) {
+                const element = document.getElementById(`${field}-value`);
+                if (element) {
+                    const value = this.data[field];
+                    if (value) {
+                        element.textContent = value;
+                    } else {
+                        const placeholders = {
+                            age: '未设置',
+                            gender: '未设置',
+                            region: '未设置',
+                            vision: '未检测',
+                            degree: '未测量',
+                            plan: '待制定',
+                            motto: '在这里写下你的护眼宣言...',
+                            email: '未绑定',
+                            phone: '未绑定'
+                        };
+                        element.textContent = placeholders[field] || '';
+                    }
+                }
+            },
+
+            loadHistory: function() {
+                const container = document.getElementById('history-container');
+                const noHistoryMsg = document.getElementById('no-history-message');
+                noHistoryMsg.innerHTML = '<div class="loading-spinner"></div><p>正在加载历史记录...</p>';
+                fetch('/api/history')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应不正常');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.history && data.history.length > 0) {
+                            this.renderHistory(data.history);
+                        } else {
+                            noHistoryMsg.innerHTML = '<i class="fas fa-robot"></i><p>暂无问答记录</p><p>快去咨询近视防控问题吧</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取历史记录失败:', error);
+                        noHistoryMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>加载历史记录失败</p><p>' + error.message + '</p>';
+                    });
+            },
+
+            renderHistory: function(history) {
+                const container = document.getElementById('history-container');
+                container.innerHTML = '';
+                history.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'history-card';
+                    const question = document.createElement('div');
+                    question.className = 'history-question';
+                    question.textContent = item.question || '无问题内容';
+                    const answer = document.createElement('div');
+                    answer.className = 'history-answer';
+                    answer.textContent = item.answer || '无回答内容';
+                    const time = document.createElement('div');
+                    time.className = 'history-time';
+                    time.innerHTML = `<i class="far fa-clock"></i> ${item.formatted_time || item.timestamp || '时间未知'}`;
+                    card.appendChild(question);
+                    card.appendChild(answer);
+                    card.appendChild(time);
+                    container.appendChild(card);
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            userData.init();
+            document.getElementById('refresh-history').addEventListener('click', function() {
+                userData.loadHistory();
+            });
+            document.querySelectorAll('.editable').forEach(editable => {
+                editable.addEventListener('click', function() {
+                    const field = this.getAttribute('data-field');
+                    showEditForm(field);
+                });
+            });
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                if (confirm('确定要退出登录吗？')) {
+                    sessionStorage.removeItem('currentUsername');
+                    localStorage.removeItem('currentUsername');
+                    window.location.href = '/logout';
+                }
+            });
+            const avatarUpload = document.getElementById('avatar-upload');
+            const profileAvatar = document.getElementById('profile-avatar');
+            profileAvatar.addEventListener('click', function() {
+                avatarUpload.click();
+            });
+            avatarUpload.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        userData.data.avatarUrl = event.target.result;
+                        userData.save();
+                        const avatar = document.getElementById('profile-avatar');
+                        avatar.style.backgroundImage = `url(${event.target.result})`;
+                        document.getElementById('avatar-text').style.display = 'none';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+
+        function showEditForm(field) {
+            document.querySelectorAll('.edit-form').forEach(form => {
+                form.style.display = 'none';
+            });
+            const form = document.getElementById(`${field}-form`);
+            const input = document.getElementById(`${field}-input`);
+            const currentValue = userData.data[field] || '';
+            if (form && input) {
+                if (input.tagName === 'TEXTAREA') {
+                    input.value = currentValue;
+                } else if (input.tagName === 'SELECT') {
+                    input.value = currentValue;
+                } else {
+                    input.value = currentValue;
+                }
+                form.style.display = 'block';
+                input.focus();
+            }
+        }
+
+        function saveField(field) {
+            const input = document.getElementById(`${field}-input`);
+            if (input) {
+                userData.update(field, input.value);
+                cancelEdit(field);
+            }
+        }
+
+        function cancelEdit(field) {
+            const form = document.getElementById(`${field}-form`);
+            if (form) {
+                form.style.display = 'none';
+            }
+        }
+
+        function showPasswordModal() {
+            document.getElementById('password-modal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            if (!currentPassword) {
+                alert('请输入当前密码');
+                return;
+            }
+            if (!newPassword) {
+                alert('请输入新密码');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert('两次输入的新密码不一致');
+                return;
+            }
+            alert('密码修改成功！');
+            closeModal('password-modal');
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+        }
+
+        document.querySelectorAll('.info-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
+
+        const createGlow = () => {
+            const glow = document.createElement('div');
+            glow.style.cssText = `
+                position: fixed;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(128, 212, 255, 0.3) 0%, transparent 70%);
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                z-index: -1;
+            `;
+            document.body.appendChild(glow);
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = `${e.clientX}px`;
+                glow.style.top = `${e.clientY}px`;
+            });
+        };
+        createGlow();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ad3bc56a2c1d76',t:'MTc0NjQxNjYwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

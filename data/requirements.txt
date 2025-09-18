@@ -1,0 +1,10 @@
+flask==2.0.1
+flask-login==0.5.0
+neo4j==4.4.0
+beautifulsoup4==4.10.0
+requests==2.26.0
+python-dotenv==0.19.0
+pytz==2021.3
+lxml==4.6.3
+gunicorn==20.1.0
+authlib>=1.2.0

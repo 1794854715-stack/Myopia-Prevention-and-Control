@@ -1,0 +1,190 @@
+body {
+    font-family: 'Orbitron', Arial, sans-serif; /* 科技感字体 */
+    background: #0a0a1a; /* 深邃蓝黑背景 */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #e0f2fe;
+}
+
+.container {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+h1 {
+    background: linear-gradient(45deg, #0066ff, #00f7ff); /* 霓虹渐变 */
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    position: relative;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+#chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: rgba(0, 10, 20, 0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message {
+    max-width: 75%;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.message-content {
+    padding: 12px 18px;
+    border-radius: 8px;
+    position: relative;
+    line-height: 1.5;
+    transition: transform 0.3s ease;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #0066ff, #00c3ff);
+    color: #fff;
+    border-bottom-right-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0, 110, 255, 0.4);
+}
+
+.bot-message .message-content {
+    background: rgba(20, 30, 50, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    color: #e0f2fe;
+    border-bottom-left-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0, 255, 255, 0.1);
+}
+
+/* 消息气泡小箭头 */
+.chat-message::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    bottom: -5px;
+    transform: rotate(45deg);
+}
+
+.user-message::after {
+    right: 10px;
+    background: linear-gradient(135deg, #0066ff, #00c3ff);
+}
+
+.bot-message::after {
+    left: 10px;
+    background: rgba(20, 30, 50, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+#input-area {
+    display: flex;
+    padding: 15px;
+    background: rgba(0, 20, 40, 0.8);
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+#question-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 25px;
+    font-size: 14px;
+    background: rgba(0, 40, 80, 0.3);
+    color: #e0f2fe;
+    transition: all 0.3s ease;
+}
+
+#question-input:focus {
+    border-color: #00f7ff;
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.3);
+}
+
+#ask-button {
+    padding: 12px 25px;
+    margin-left: 15px;
+    background: linear-gradient(45deg, #0066ff, #00f7ff);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+#ask-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 247, 255, 0.4);
+}
+
+/* 增强版加载动画 */
+.loading-spinner {
+    border: 3px solid rgba(0, 255, 255, 0.2);
+    border-top-color: #00f7ff;
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+}
+
+/* 错误提示科技化 */
+.error-message {
+    background: rgba(40, 0, 0, 0.9);
+    border-left: 4px solid #ff004d;
+    box-shadow: 0 0 20px rgba(255, 0, 77, 0.3);
+}
+
+.error-title {
+    color: #ff004d;
+    text-shadow: 0 0 8px rgba(255, 0, 77, 0.3);
+}
+
+/* 新增科技感装饰线 */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    pointer-events: none;
+    animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+    0% { transform: translateY(-100%) rotate(45deg); }
+    100% { transform: translateY(100%) rotate(45deg); }
+}
+
+/* 增强滚动条 */
+#chat-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(#0066ff, #00f7ff);
+    border-radius: 4px;
+}

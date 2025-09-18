@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护眼小勇士 - 科技版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #80d4ff;
+            --success: #00cc66;
+            --danger: #ff4d4d;
+            --bg-light: #e6f0ff;
+            --neon-glow: 0 0 10px var(--primary),
+                         0 0 20px var(--primary),
+                         0 0 30px var(--primary);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #e6f0ff, #f5faff);
+            color: #005566;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 50% 50%,
+                    rgba(128, 212, 255, 0.2) 0%,
+                    transparent 60%),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    transparent 19px,
+                    rgba(128, 212, 255, 0.2) 20px
+                );
+            animation: bgMove 60s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            from { transform: rotate(0deg) translateX(-50%); }
+            to { transform: rotate(360deg) translateX(-50%); }
+        }
+
+        /* Sidebar styles from index.html */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(240, 248, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-right: 1px solid rgba(128, 212, 255, 0.4);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 25px;
+            color: #007bff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(208, 231, 255, 0.5);
+        }
+
+        .sidebar-menu li.active {
+            background: linear-gradient(90deg, rgba(128, 212, 255, 0.3), transparent);
+            border-left: 3px solid #4facfe;
+        }
+
+        .user-avatar-container {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 2px solid #4facfe;
+            box-shadow: 0 0 15px rgba(128, 212, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            left: 15px;
+            top: 22px;
+            z-index: 1200;
+            background: none;
+            border: none;
+            color: #4facfe;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Game container adjustments */
+        .game-container {
+            margin-left: 250px;
+            padding: 90px 20px 20px;
+            width: calc(100% - 250px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 70%;
+            }
+
+            .game-container {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 15px 15px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Existing game styles */
+        .header {
+            background: rgba(245, 250, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+            box-shadow: var(--neon-glow);
+            padding: 12px 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            z-index: 1100;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            padding: 8px 15px;
+            background: rgba(128, 212, 255, 0.2);
+            color: #4facfe;
+            border: 1px solid rgba(128, 212, 255, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-btn:hover {
+            background: rgba(128, 212, 255, 0.3);
+            box-shadow: 0 0 10px rgba(128, 212, 255, 0.3);
+        }
+
+        .game-title {
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+        }
+
+        .game-subtitle {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.5);
+        }
+
+        .character-container {
+            height: 200px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .character {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            transition: all 0.3s ease;
+        }
+
+        .character img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px var(--primary));
+        }
+
+        .jump {
+            animation: jump 0.5s ease;
+        }
+
+        .sad-fall {
+            animation: sadFall 0.5s ease;
+        }
+
+        @keyframes jump {
+            0%, 100% { bottom: 0; transform: translateX(-50%) scale(1); }
+            50% {
+                bottom: 50px;
+                transform: translateX(-50%) scale(1.1);
+                filter: hue-rotate(90deg);
+            }
+        }
+
+        @keyframes sadFall {
+            0% { bottom: 0; transform: translateX(-50%) rotate(0deg); }
+            50% { bottom: -20px; transform: translateX(-50%) rotate(20deg); }
+            100% { bottom: 0; transform: translateX(-50%) rotate(0deg); }
+        }
+
+        .vision-display {
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(230, 240, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-glow);
+            backdrop-filter: blur(5px);
+            color: #005566;
+        }
+
+        .vision-change {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            animation: floatUp 1s ease-out;
+            text-shadow: var(--neon-glow);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        .happy-change {
+            color: var(--success);
+        }
+
+        .no-change {
+            color: var(--danger);
+        }
+
+        .question-card {
+            background: rgba(230, 240, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-glow);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 45%,
+                var(--primary) 50%,
+                transparent 55%
+            );
+            animation: lightFlow 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes lightFlow {
+            0% { transform: rotate(0deg) translateX(-50%); }
+            100% { transform: rotate(360deg) translateX(-50%); }
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #005566;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(128, 212, 255, 0.5);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 1px solid var(--primary);
+            border-radius: 15px;
+            background: rgba(200, 220, 255, 0.5);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            color: #1a2a44;
+        }
+
+        .option-btn:hover {
+            background: rgba(208, 231, 255, 0.7);
+            transform: translateY(-3px);
+            box-shadow: var(--neon-glow);
+        }
+
+        .option-letter {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: #1a2a44;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(200, 220, 255, 0.5);
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+            display: none;
+            animation: fadeIn 0.5s;
+            color: #005566;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            background: rgba(230, 240, 255, 0.9);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .progress-text {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-shadow: var(--neon-glow);
+        }
+
+        .progress-bar {
+            height: 15px;
+            background: rgba(200, 220, 255, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: var(--neon-glow);
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 1s;
+            background: rgba(230, 240, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+            text-shadow: var(--neon-glow);
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .success .result-icon {
+            color: var(--success);
+        }
+
+        .failure .result-icon {
+            color: var(--danger);
+        }
+
+        .result-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+        }
+
+        .final-vision {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: rgba(128, 212, 255, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: #1a2a44;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--primary),
+                       0 0 30px var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <nav class="sidebar">
+        <div class="user-avatar-container">
+            <a href="/user-center" class="user-avatar">
+                <img src="{{ user.avatar_url }}" alt="用户头像" onerror="this.src='/static/uploads/avatars/user_1.png'">
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li data-href="/index">💡 防控问答</li>
+            <li data-href="/user-center">👤 用户中心</li>
+            <li data-href="/light-detection">🔆 光线检测</li>
+            <li data-href="/kids_game" class="active">🎮 护眼小游戏</li>
+        </ul>
+    </nav>
+
+    <div class="game-container">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='/main'">
+                <i class="fas fa-arrow-left"></i> 返回
+            </button>
+            <h1>🔮 护眼科技先锋</h1>
+        </div>
+
+        <h2 class="game-title">🚀 视力守护计划</h2>
+        <p class="game-subtitle">答对问题，保护视力，成为科技护眼达人！</p>
+
+        <div class="progress-container">
+            <div class="progress-text">视力保护进度: <span id="current-score">0</span>/<span id="total-questions">10</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="vision-display">
+            👁️ 当前视力: <span id="vision-value">5.0</span>
+        </div>
+
+        <div class="character-container">
+            <div class="character" id="character">
+                <img src="/static/images/tech_eye_hero.png" alt="科技护眼先锋">
+            </div>
+        </div>
+
+        <div id="question-container">
+            <!-- 题目将通过JavaScript动态加载 -->
+        </div>
+
+        <div class="result-container" id="result-container">
+            <div class="result-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="result-message" id="result-message">恭喜完成挑战！</div>
+            <div class="final-vision">
+                🎯 最终视力: <span id="final-vision">5.0</span>
+            </div>
+            <button class="action-btn" onclick="window.location.href='/main'">
+                <i class="fas fa-home"></i> 返回主页
+            </button>
+            <button class="action-btn" onclick="restartGame()">
+                <i class="fas fa-redo"></i> 再玩一次
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                window.location.href = this.dataset.href;
+            });
+        });
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)'
+                ? 'translateX(-100%)'
+                : 'translateX(0px)';
+        }
+
+        // Game logic remains unchanged
+        const gameState = {
+            questions: [
+                {
+                    question: "下面哪个行为对保护视力最有帮助？",
+                    options: [
+                        "每天玩2小时手机游戏",
+                        "每用眼20分钟就远眺20秒",
+                        "在昏暗灯光下看书",
+                        "躺着看平板电脑"
+                    ],
+                    answer: 1,
+                    explanation: "正确答案是B！20-20-20法则是最有效的护眼方法之一：每用眼20分钟，远眺20英尺(约6米)外的地方20秒。"
+                },
+                {
+                    question: "哪种光线最适合阅读？",
+                    options: [
+                        "昏暗的台灯",
+                        "刺眼的强光",
+                        "柔和的自然光",
+                        "闪烁的灯光"
+                    ],
+                    answer: 2,
+                    explanation: "正确答案是C！柔和的自然光是最适合阅读的光线，既不会太暗导致眼睛疲劳，也不会太强刺激眼睛。"
+                },
+                {
+                    question: "每天户外活动多长时间有助于预防近视？",
+                    options: [
+                        "15分钟",
+                        "30分钟",
+                        "1小时",
+                        "2小时"
+                    ],
+                    answer: 3,
+                    explanation: "正确答案是D！研究表明，每天2小时的户外活动可以有效预防近视，因为自然光有助于眼睛健康发育。"
+                }
+            ],
+            currentIndex: 0,
+            userAnswers: [],
+            correctCount: 0,
+            vision: 5.0,
+
+            init: function() {
+                document.getElementById('total-questions').textContent = this.questions.length;
+                this.renderQuestion();
+            },
+
+            renderQuestion: function() {
+                const container = document.getElementById('question-container');
+                const currentQuestion = this.questions[this.currentIndex];
+
+                document.getElementById('current-score').textContent = this.correctCount;
+                const progressPercent = (this.correctCount / this.questions.length) * 100;
+                document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+                document.getElementById('vision-value').textContent = this.vision.toFixed(1);
+
+                let optionsHtml = '';
+                const letters = ['A', 'B', 'C', 'D'];
+                currentQuestion.options.forEach((option, index) => {
+                    optionsHtml += `
+                        <button class="option-btn" data-index="${index}">
+                            <span class="option-letter">${letters[index]}</span>
+                            ${option}
+                        </button>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="question-card">
+                        <div class="question-text">${currentQuestion.question}</div>
+                        <div class="options-container">
+                            ${optionsHtml}
+                        </div>
+                        <div class="explanation" id="explanation">
+                            ${currentQuestion.explanation}
+                        </div>
+                    </div>
+                `;
+
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const selectedIndex = parseInt(btn.dataset.index);
+                        this.checkAnswer(selectedIndex);
+                    });
+                });
+            },
+
+            checkAnswer: function(selectedIndex) {
+                const currentQuestion = this.questions[this.currentIndex];
+                const isCorrect = selectedIndex === currentQuestion.answer;
+                const character = document.getElementById('character');
+
+                this.showVisionChange(isCorrect);
+
+                if (isCorrect) {
+                    this.vision = Math.min(5.3, this.vision + 0.1);
+                    this.correctCount++;
+                    character.classList.add('jump');
+                    setTimeout(() => character.classList.remove('jump'), 500);
+                } else {
+                    character.classList.add('sad-fall');
+                    setTimeout(() => character.classList.remove('sad-fall'), 500);
+                }
+
+                document.getElementById('explanation').style.display = 'block';
+
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.disabled = true;
+                    const index = parseInt(btn.dataset.index);
+                    if (index === currentQuestion.answer) {
+                        btn.style.borderColor = 'var(--success)';
+                        btn.style.background = 'rgba(0, 204, 102, 0.2)';
+                    } else if (index === selectedIndex && !isCorrect) {
+                        btn.style.borderColor = 'var(--danger)';
+                        btn.style.background = 'rgba(255, 77, 77, 0.2)';
+                    }
+                });
+
+                setTimeout(() => {
+                    if (this.currentIndex < this.questions.length - 1) {
+                        this.currentIndex++;
+                        this.renderQuestion();
+                    } else {
+                        this.showResult();
+                    }
+                }, 2000);
+            },
+
+            showVisionChange: function(isCorrect) {
+                const changeElement = document.createElement('div');
+                changeElement.className = `vision-change ${isCorrect ? 'happy-change' : 'no-change'}`;
+                changeElement.textContent = isCorrect ? '视力 +0.1 👏' : '加油哦 💪';
+                changeElement.style.left = '50%';
+                changeElement.style.bottom = '100px';
+                document.querySelector('.character-container').appendChild(changeElement);
+                setTimeout(() => changeElement.remove(), 1000);
+            },
+
+            showResult: function() {
+                document.getElementById('question-container').style.display = 'none';
+                const resultContainer = document.getElementById('result-container');
+                const finalVision = document.getElementById('final-vision');
+                const resultMessage = document.getElementById('result-message');
+
+                finalVision.textContent = this.vision.toFixed(1);
+
+                if (this.correctCount === this.questions.length) {
+                    resultContainer.className = 'result-container success show';
+                    resultMessage.textContent = '太棒了！你是护眼小专家！🏆';
+                } else if (this.correctCount >= this.questions.length * 0.7) {
+                    resultContainer.className = 'result-container success show';
+                    resultMessage.textContent = '做得不错！继续保护视力哦！✨';
+                } else {
+                    resultContainer.className = 'result-container failure show';
+                    resultMessage.textContent = '加油！多学护眼知识，下次会更好！💪';
+                }
+
+                resultContainer.style.display = 'block';
+            }
+        };
+
+        function restartGame() {
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            gameState.init();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93ad255ee8d853b7',t:'MTc0NjQxNTY4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
