@@ -8,7 +8,6 @@
 - `src`：代码文件（爬虫、知识图谱、问答逻辑）
 - `data`：原始数据与依赖清单`requirements.txt`
 - `saved_models`：知识图谱嵌入、问答模型成果
-- `user_model`：最终生成的核心模型文件
 - `static`：Web前端静态资源（若有可视化界面）
 - `templates`：Web前端模板文件（若有可视化界面）
 
