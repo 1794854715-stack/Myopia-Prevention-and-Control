@@ -12,4 +12,4 @@
 - `templates`：Web前端模板文件
 
 ## 代码使用说明
-3. 启动问答服务：`python src/app.py`
+ 启动问答服务：`python src/app.py`
