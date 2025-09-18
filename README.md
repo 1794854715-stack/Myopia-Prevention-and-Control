@@ -6,7 +6,7 @@
 
 ## 目录说明
 - `data`：原始数据与依赖清单`requirements.txt`
-- - `saved_models`：知识图谱嵌入、问答模型成果
+- `saved_models`：知识图谱嵌入、问答模型成果
 - `src`：代码文件（爬虫、知识图谱、问答逻辑）
 - `static`：Web前端静态资源
 - `templates`：Web前端模板文件
